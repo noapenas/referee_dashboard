@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. Base de Dados (PostgreSQL + PostGIS para as coordenadas do Garmin)
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: referee_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: referee_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. O nosso Backend (FastAPI)
+  backend:
+    build: 
+      context: ./backend
+    container_name: referee_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      # Passamos a password e a BD para o Python ler no database.py
+      - DATABASE_URL=postgresql://postgres:postgres_password@db:5432/referee_db
+    volumes:
+      # Sincroniza o teu código local com o contentor (não precisas de reiniciar o docker quando alteras código Python)
+      - ./backend:/app
+    depends_on:
+      - db
+
+  # 3. O nosso Frontend (Streamlit)
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: referee_frontend
+    restart: always
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+
+volumes:
+  # Garante que os dados da Base de Dados não desaparecem se o contentor for abaixo
+  postgres_data:
