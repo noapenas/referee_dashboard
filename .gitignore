@@ -1,0 +1,22 @@
+# Ambientes Virtuais Python
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Variáveis de ambiente e segredos (CRUCIAL)
+.env
+
+# Ficheiros do sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ficheiros gerados pelo Streamlit ou Jupyter
+.streamlit/
+.ipynb_checkpoints/
+
+# Ficheiros de dados locais (onde testas ficheiros Garmin)
+*.fit
+*.tcx
+*.csv
